@@ -1,0 +1,17 @@
+{
+  "ontology": {
+    "name": "Sql Injection",
+    "concepts": [
+      {
+        "description": "Representa um uma falha sql injection nível 1",
+        "format": "(mysqli?_|->query\\(\"|').*[\\$].+(\"|')\\)",
+        "nivel": 1
+      },
+      {
+        "description": "Representa um uma falha sql injection nível 2",
+        "format": "(mysqli?_|->query\\(\"|'|\\$[a-zA-Z_\\x7f-\\xff][a-zA-Z0-9_\\x7f-\\xff]).*[\\$].+(\"|')\\)",
+        "nivel": 2
+      }
+    ]
+  }
+}

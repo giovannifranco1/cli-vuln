@@ -1,0 +1,19 @@
+{
+  "ontology": {
+    "name": "Xss",
+    "concepts": [
+      {
+        "description": "Representa um uma falha xss nível 1",
+        "format": "echo\\(?\\s*(\\$[a-zA-Z0-9_]+)\\)?|<\\?php.*echo\\(?\\s*(\\$[a-zA-Z0-9_]+)\\)?.*\\?>"
+      },
+      {
+        "description": "Representa um uma falha xss nível 2",
+        "format": "echo\\(?\\s*\\$_GET\\[[\"']([^\"']+)[\"']\\]\\)?|<\\?php.*echo\\(?\\s*\\$_GET\\[[\"']([^\"']+)[\"']\\]\\)?.*\\?>"
+      }
+    ],
+    "links":[
+      "http://php.net/manual/pt_BR/function.echo.php",
+      "http://php.net/manual/pt_BR/reserved.variables.get.php"
+    ]
+  }
+}

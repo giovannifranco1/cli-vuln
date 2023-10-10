@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "cli-vuln"
+version = "0.1.0"
+description = ""
+authors = ["giovanni.franco <giovanni.franco@nanoincub.com.br>"]
+readme = "README.md"
+packages = [{include = "cli_vuln"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+typer = {extras = ["all"], version = "^0.9.0"}
+termcolor = "^2.3.0"
+
+[tool.poetry.scripts]
+cli-start = 'cli_vuln.main:app'
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

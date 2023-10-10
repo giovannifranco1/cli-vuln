@@ -1,0 +1,14 @@
+{
+  "ontology": {
+    "name": "IP exposed",
+    "concepts": [
+      {
+        "description": "Representa um uma falha ip exposed nível 1",
+        "format": ""
+      }
+    ],
+    "links": [
+      "https://imasters.com.br/devsecops/5-formas-para-prevenir-os-ataques-xss"
+    ]
+  }
+}
