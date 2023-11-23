@@ -1,19 +1,25 @@
 {
-  "ontology": {
-    "name": "Xss",
-    "concepts": [
-      {
-        "description": "Representa um uma falha xss nível 1",
-        "format": "echo\\(?\\s*(\\$[a-zA-Z0-9_]+)\\)?|<\\?php.*echo\\(?\\s*(\\$[a-zA-Z0-9_]+)\\)?.*\\?>"
-      },
-      {
-        "description": "Representa um uma falha xss nível 2",
-        "format": "echo\\(?\\s*\\$_GET\\[[\"']([^\"']+)[\"']\\]\\)?|<\\?php.*echo\\(?\\s*\\$_GET\\[[\"']([^\"']+)[\"']\\]\\)?.*\\?>"
-      }
-    ],
-    "links":[
-      "http://php.net/manual/pt_BR/function.echo.php",
-      "http://php.net/manual/pt_BR/reserved.variables.get.php"
-    ]
-  }
+    "ontology": {
+        "name": "Xss",
+        "concepts": [
+            {
+                "description": "Representa uma falha xss nível 1",
+                "format": "echo\\(?\\s*\\$_GET\\[[\"']([^\"']+)[\"']\\]\\)?|<\\?php.*echo\\(?\\s*\\$_GET\\[[\"']([^\"']+)[\"']\\]\\)?.*\\?>"
+            },
+            {
+                "description": "Representa uma falha xss nível 1",
+                "format": "(?:<\\s*script\\s*.*?>|<\\s*a\\s*.*?)(?:document\\s*\\.\\s*location\\s*|window\\s*\\.\\s*location\\s*|location\\s*\\.\\s*href\\s*|location\\s*\\.\\s*assign\\s*\\(|onerror\\s*=|onload\\s*=|onchange\\s*=)(.*?)(?:<\\/script>|<\\/a>)"
+            }
+        ],
+        "links": [
+            "http://php.net/manual/pt_BR/function.echo.php",
+            "http://php.net/manual/pt_BR/reserved.variables.get.php",
+            "https://www.owasp.org/index.php/XSS_(Cross_Site_Scripting)_Prevention_Cheat_Sheet",
+            "https://www.owasp.org/index.php/XSS_Filter_Evasion_Cheat_Sheet",
+            "https://www.owasp.org/index.php/XSS_Filter_Evasion_Cheat_Sheet#IMG_Onerror",
+            "https://www.owasp.org/index.php/XSS_Filter_Evasion_Cheat_Sheet#SCRIPT_Onerror",
+            "https://www.owasp.org/index.php/XSS_Filter_Evasion_Cheat_Sheet#IMG_SRC_Lowsrc",
+            "https://www.owasp.org/index.php/XSS_Filter_Evasion_Cheat_Sheet#IMG_SRC_Lowsrc_.28Old_Browsers.29"
+        ]
+    }
 }
