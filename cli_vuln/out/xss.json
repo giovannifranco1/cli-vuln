@@ -3,12 +3,14 @@
         "name": "Xss",
         "concepts": [
             {
-                "description": "Representa uma falha xss nível 1",
-                "format": "echo\\(?\\s*\\$_GET\\[[\"']([^\"']+)[\"']\\]\\)?|<\\?php.*echo\\(?\\s*\\$_GET\\[[\"']([^\"']+)[\"']\\]\\)?.*\\?>"
+                "description": "Represents a level 1 xss failure",
+                "format": "echo\\(?\\s*\\$_GET\\[[\"']([^\"']+)[\"']\\]\\)?|<\\?php.*echo\\(?\\s*\\$_GET\\[[\"']([^\"']+)[\"']\\]\\)?.*\\?>",
+                "level": 1
             },
             {
-                "description": "Representa uma falha xss nível 1",
-                "format": "(?:<\\s*script\\s*.*?>|<\\s*a\\s*.*?)(?:document\\s*\\.\\s*location\\s*|window\\s*\\.\\s*location\\s*|location\\s*\\.\\s*href\\s*|location\\s*\\.\\s*assign\\s*\\(|onerror\\s*=|onload\\s*=|onchange\\s*=)(.*?)(?:<\\/script>|<\\/a>)"
+                "description": "Represents a level 1 xss failure",
+                "format": "(?:<\\s*script\\s*.*?>|<\\s*a\\s*.*?)(?:document\\s*\\.\\s*location\\s*|window\\s*\\.\\s*location\\s*|location\\s*\\.\\s*href\\s*|location\\s*\\.\\s*assign\\s*\\(|onerror\\s*=|onload\\s*=|onchange\\s*=)(.*?)(?:<\\/script>|<\\/a>)",
+                "level": 2
             }
         ],
         "links": [
