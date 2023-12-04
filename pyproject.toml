@@ -10,6 +10,11 @@ packages = [{include = "cli_vuln"}]
 python = "^3.11"
 typer = {extras = ["all"], version = "^0.9.0"}
 termcolor = "^2.3.0"
+joblib = "^1.3.2"
+scikit-learn = "^1.3.2"
+pandas = "^2.1.3"
+numpy = "^1.26.2"
+keyboard = "^0.13.5"
 
 [tool.poetry.scripts]
 cli-start = 'cli_vuln.main:app'

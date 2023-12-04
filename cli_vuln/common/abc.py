@@ -1,8 +1,11 @@
 import re
 import json
+import joblib
+import os
 
 from typing import List, Tuple
 from abc import ABC, abstractmethod
+from cli_vuln.core.security import model_utils
 
 
 class Vulnerability(ABC):
@@ -29,9 +32,9 @@ class Vulnerability(ABC):
 
     def find(self) -> List[Tuple[str, int, re.Match]]:
         with open(self.ontology_json, "r") as ontology_json:
-            xss_data = json.load(ontology_json)
+            data = json.load(ontology_json)
 
-        expressions = map(lambda x: x["format"], xss_data["ontology"]["concepts"])
+        expressions = map(lambda x: x["format"], data["ontology"]["concepts"])
         output = []
 
         try:
@@ -39,11 +42,7 @@ class Vulnerability(ABC):
                 re.compile(regex)
                 output += self._find(regex, False)
 
-                if len(output) > 0:
-                    break
-
         except re.error:
-            print("Invalid regex")
             exit()
 
         return output
