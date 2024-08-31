@@ -20,6 +20,12 @@ readchar = "^4.0.5"
 [tool.poetry.scripts]
 cli-start = 'cli_vuln.main:app'
 
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.2"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+python_functions = ["it_*"]
