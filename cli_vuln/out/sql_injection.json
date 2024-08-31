@@ -1,17 +1,21 @@
 {
-  "ontology": {
-    "name": "Sql Injection",
-    "concepts": [
-      {
-        "description": "Representa um uma falha sql injection nível 1",
-        "format": "(mysqli?_|->query\\(\"|').*[\\$].+(\"|')\\)",
-        "nivel": 1
-      },
-      {
-        "description": "Representa um uma falha sql injection nível 2",
-        "format": "(mysqli?_|->query\\(\"|'|\\$[a-zA-Z_\\x7f-\\xff][a-zA-Z0-9_\\x7f-\\xff]).*[\\$].+(\"|')\\)",
-        "nivel": 2
-      }
-    ]
-  }
+    "ontology": {
+        "name": "Sql Injection",
+        "concepts": [
+            {
+                "description": "Represents a level 1 sql injection failure",
+                "format": "(mysqli?_|->query\\(\"|').*[\\$].+(\"|')\\)",
+                "level": 1
+            },
+            {
+                "description": "Represents a level 2 sql injection failure",
+                "format": "(mysqli?_|->query\\(\"|'|\\$[a-zA-Z_\\x7f-\\xff][a-zA-Z0-9_\\x7f-\\xff]).*[\\$].+(\"|')\\)",
+                "level": 2
+            }
+        ],
+        "links":[
+            "https://www.owasp.org/index.php/SQL_Injection_Prevention_Cheat_Sheet",
+            "https://www.owasp.org/index.php/SQL_Injection"
+        ]
+    }
 }

@@ -1,14 +1,25 @@
 {
-  "ontology": {
-    "name": "IP exposed",
-    "concepts": [
-      {
-        "description": "Representa um uma falha ip exposed nível 1",
-        "format": ""
-      }
-    ],
-    "links": [
-      "https://imasters.com.br/devsecops/5-formas-para-prevenir-os-ataques-xss"
-    ]
-  }
+    "ontology": {
+        "name": "IP exposed",
+        "concepts": [
+            {
+                "description": "Level 1: Basic Regular Expression for IPv4",
+                "format": "\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b",
+                "level": 1
+            },
+            {
+                "description": "Level 2: Regular Expression for IPv4 and IPv6",
+                "format": "\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b|\\b(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}\\b",
+                "level": 2
+            },
+            {
+                "description": "Level 3: Regular Expression to Capture Context",
+                "format": "(?:\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b|\\b(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}\\b)(?=[^\\d.:]|$)",
+                "level": 3
+            }
+        ],
+        "links": [
+            "https://www.regular-expressions.info/regexbuddy/ipaccurate.html"
+        ]
+    }
 }

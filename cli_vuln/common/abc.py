@@ -1,16 +1,14 @@
 import re
 import json
+import joblib
+import os
 
 from typing import List, Tuple
 from abc import ABC, abstractmethod
+from cli_vuln.core.security import model_utils
 
 
 class Vulnerability(ABC):
-    """(common) Vulnerability abstract base class.
-
-    Abstract base class for common PHP vulnerabilities.
-    """
-
     def __init__(self, file_path: str):
         self.file_path = file_path
 
@@ -20,54 +18,37 @@ class Vulnerability(ABC):
     @property
     @abstractmethod
     def name(self) -> str:
-        """Name of common vulnerability.
-
-        Returns:
-            str: name of common vulnerability
-        """
         pass
 
     @property
     @abstractmethod
     def keyname(self) -> str:
-        """Keyname of common vulnerability used in `--vulns` command line argument.
-
-        Returns:
-            str: keyname of common vulnerability
-        """
         pass
 
     @property
     @abstractmethod
     def ontology_json(self) -> str:
-        """Ontology JSON file path.
-
-        Returns:
-            str: ontology JSON file path
-        """
         pass
 
-    @abstractmethod
     def find(self) -> List[Tuple[str, int, re.Match]]:
-        """Find all vulnerable lines of code.
+        with open(self.ontology_json, "r") as ontology_json:
+            data = json.load(ontology_json)
 
-        Abstract method to find all vulnerable lines of code,
-        and return the lines, line numbers and regex matches found.
+        expressions = map(lambda x: x["format"], data["ontology"]["concepts"])
+        output = []
 
-        Returns:
-            List[Tuple[str, int, re.Match]]: list of potential vulnerable code containing the line, line number and regex match
-        """
+        try:
+            for regex in expressions:
+                re.compile(regex)
+                output += self._find(regex, False)
+
+        except re.error:
+            exit()
+
+        return output
         pass
 
     def get_lines(self) -> List[str]:
-        """Get all lines of file.
-
-        Get all stripped lines of the specified file in
-        Vulnerability subclass.
-
-        Returns:
-            List[str]: list of lines from file
-        """
         with open(self.file_path, "r", encoding="utf-8", errors="ignore") as f:
             lines = [line.strip() for line in f.readlines()]
         return lines
