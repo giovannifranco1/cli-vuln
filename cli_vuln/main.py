@@ -6,7 +6,8 @@ import tempfile
 import pandas as pd
 import joblib
 import logging
-import keyboard
+import threading
+
 
 from time import sleep
 from typing import List, Tuple
@@ -43,13 +44,14 @@ from cli_vuln.common.abc import Vulnerability
 from concurrent.futures import ThreadPoolExecutor
 from rich.tree import Tree
 from rich.logging import RichHandler
-
+from readchar import readkey, key
 
 app = typer.Typer(help="CLI for finding vulnerabilities in PHP files using REGEX and Machine Learning")
 
 # Variables globais
 vulns_global = []
 predictions_global = []
+log_scan_full = Table.grid(padding=1)
 
 
 def make_sponsor_message() -> Panel:
@@ -108,24 +110,6 @@ def make_layout() -> Layout:
     return layout
 
 
-layout = make_layout()
-
-
-from random import randint
-
-from rich import print
-from rich.highlighter import Highlighter
-
-
-class RainbowHighlighter(Highlighter):
-    def highlight(self, text):
-        for index in range(len(text)):
-            text.stylize(f"color({randint(16, 255)})", index, index + 1)
-
-
-from rich.pretty import Pretty
-
-
 def make_header() -> Panel:
     """Display Header."""
     grid = Table.grid(expand=True)
@@ -164,7 +148,7 @@ def make_progress(total_files: int) -> [Progress, Progress, Table, Task, Task]:
     return overall_progress, job_progress, progress_table, task_scan_machine_learning, task_scan_regex, overall_task
 
 
-def make_panel_vulnerabilities_found(tree: Tree) -> Panel:
+def make_panel_vulnerabilities_found(tree: Tree, key: str = "CTRL + V") -> Panel:
     """
     Make table vulnerabilities found
 
@@ -180,7 +164,7 @@ def make_panel_vulnerabilities_found(tree: Tree) -> Panel:
 
     return Panel(
         Align.left(tree),
-        title=f"[b red]REGEX - {len(vulns_global)} Vulnerabilities found",
+        title=f"[b red]REGEX - {len(vulns_global)} Vulnerabilities found [/b red] Press [b blue] {key} [/b blue] to return to the main screen",
         border_style="red",
         padding=(1, 2),
     )
@@ -238,7 +222,7 @@ def make_scan_regex_log() -> [Panel, Table]:
     return message_panel, scan_regex_log
 
 
-@app.command()
+@app.command(help="Show the version of the CLI")
 def version():
     """
     Show the version of the CLI
@@ -246,7 +230,7 @@ def version():
     print(__version__)
 
 
-@app.command(help="", epilog="Developed by: @giovannifranco1")
+@app.command(help="Create a new concept", epilog="Developed by: @giovannifranco1")
 def new_concept():
     """
     Create a new concept.
@@ -257,7 +241,7 @@ def new_concept():
     _list_ontologies_painel()
 
     print("\n")
-    ontology = Prompt.ask("Enter the ontology number to be removed", default=None)
+    ontology = Prompt.ask("Enter the ontology number to be add", default=None)
     print("\n")
 
     if ontology is None:
@@ -372,7 +356,7 @@ def new_model(path: Path):
             _list_models_painel()
 
 
-@app.command()
+@app.command(help="Remove a model")
 def remove_model():
     _list_models_painel()
 
@@ -400,7 +384,7 @@ def remove_model():
 
 
 @app.command(help="Find vulnerabilities in PHP files using Machine Learning")
-def scan_machine_lerning(path: Path):
+def scan_machine_learning(path: Path):
     """
     Find vulnerabilities in PHP files using Machine Learning
     """
@@ -431,6 +415,9 @@ def scan_php(path: Path, vulnerability: Annotated[Vulns, typer.Option(case_sensi
     """
     print(BANNER)
 
+    global vulns_global
+    global log_scan_full
+
     if not path.exists():
         print(f"[red]The file or directory does not exist.[/red]")
         raise typer.Exit(code=1)
@@ -438,22 +425,26 @@ def scan_php(path: Path, vulnerability: Annotated[Vulns, typer.Option(case_sensi
     pred_safety = None
     pred_type = None
 
-    global vulns_global
     vuln_classes = utils.get_vulnerability_classes()
     vulns_list = [(_class.name, _class.keyname) for _class in vuln_classes]
     Vulnerability = [_class for _class in vuln_classes if _class.keyname == vulnerability][0]
     is_save_log = Confirm.ask("Do you want to save?")
     tree_vulnerabilities = Tree(f"[bold cyan]:open_file_folder: [link file://{path}]{path}", guide_style="bold bright_blue")
 
-    if path.is_dir():
-        if is_save_log:
-            path_log = Prompt.ask("Enter the path to save the log", default="log.txt")
-            path_log = Path(path_log)
+    if is_save_log:
+        path_log = Prompt.ask("Enter the path to save the log", default="log.txt")
+        path_log = Path(path_log)
 
+    if path.is_dir():
         print(f"[yellow]Checking files in the directory {path} ...[/yellow]")
         print("")
 
         files = path.glob("**/*.php")
+        files = list(files)
+        
+        if len(list(files)) == 0:
+            print("[red]No files found.[/red]")
+            raise typer.Exit(code=1)
 
         overall_progress, job_progress, progress_table, task_scan_machine_learning, task_scan_regex, overall_task = make_progress(
             len(list(files))
@@ -484,7 +475,7 @@ def scan_php(path: Path, vulnerability: Annotated[Vulns, typer.Option(case_sensi
                 tree_path,
                 box=box.ROUNDED,
                 padding=(1, 2),
-                title="[b blue] Tree",
+                title="[b blue] Tree [/b blue] Press [b red] CTRL + A [/b red] to return to the main screen",
                 border_style="bright_blue",
             )
         )
@@ -499,7 +490,6 @@ def scan_php(path: Path, vulnerability: Annotated[Vulns, typer.Option(case_sensi
                 executor.submit(_scan_machine_lerning, path, job_progress, task_scan_machine_learning, overall_progress, overall_task)
 
         pred_safety, pred_type = model_utils.mode_predictions(predictions_global)
-
         layout["body"].update(make_panel_vulnerabilities_found(tree_vulnerabilities))
 
     if path.is_file() and path.suffix.lower() == ".php":
@@ -516,15 +506,15 @@ def scan_php(path: Path, vulnerability: Annotated[Vulns, typer.Option(case_sensi
         with open(path, "r") as code_php:
             syntax = Syntax(code_php.read(), "PHP", line_numbers=True, theme="one-dark")
 
-        layout["body"].update(Panel(syntax, title=f"Code - {path}", border_style="green"))
+        layout["body"].update(
+            Panel(
+                syntax,
+                title=f"[b blue] Code - {path} [/b blue] Press [b red] CTRL + E [/b red] to return to the main screen",
+                border_style="green",
+            )
+        )
         layout["box2"].update(make_panel_vulnerabilities_found(tree_vulnerabilities))
         layout["header"].update(make_header())
-
-        console = Console()
-        with console.pager(styles=True):
-            console.screen = True
-            console.print(Panel(syntax, title=f"Code - {path}", border_style="green"))
-            console.print(make_panel_vulnerabilities_found(tree_vulnerabilities))
 
     total = len(vulns_global)
     is_vuln = total > 0
@@ -558,11 +548,51 @@ def scan_php(path: Path, vulnerability: Annotated[Vulns, typer.Option(case_sensi
     layout["box1"].update(make_prediction_message(pred_safety, pred_type))
 
     console = Console()
-    with console.pager(styles=True):
-        console.screen = True
-        console.print(layout)
+    console.screen = True
+    console.print(layout)
+    print("[b cyan]Press [b red] COMMAND [/b red][/b cyan]")
 
-        keyboard.press_and_release("shift+s, space")
+    while True:
+        k = readkey()
+
+        match k:
+            case key.CTRL_A:
+                with console.pager(styles=True):
+                    console.screen = True
+                    console.print(
+                        Panel(
+                            tree_path,
+                            box=box.ROUNDED,
+                            padding=(1, 2),
+                            title="[b blue] Tree [/b blue] Press [b red] Q [/b red] to return to the main screen",
+                            border_style="bright_blue",
+                        )
+                    )
+            case key.CTRL_V:
+                with console.pager(styles=True):
+                    console.screen = True
+                    console.print(
+                        Panel(
+                            Align.left(tree_vulnerabilities),
+                            title=f"[b red]REGEX - {len(vulns_global)} Vulnerabilities found [/b red] Press [b blue] Q [/b blue] to return to the main screen",
+                            border_style="red",
+                            padding=(1, 2),
+                        )
+                    )
+            case key.CTRL_F:
+                with console.pager(styles=True):
+                    console.screen = True
+                    console.print(log_scan_full)
+            case key.CTRL_E:
+                with console.pager(styles=True):
+                    console.screen = True
+                    console.print(
+                        Panel(
+                            syntax,
+                            title=f"[b blue] Code - {path}  [/b blue] Press [b red] Q [/b red] to return to the main screen",
+                            border_style="green",
+                        )
+                    )
 
 
 def walk_directory(path: Path, tree: Tree) -> None:
@@ -651,6 +681,8 @@ def _scan_regex(
     return: None
     """
     global vulns_global
+    global log_scan_full
+
     files = path.glob("**/*.php")
     rows_vuln = []
     rows = []
@@ -665,8 +697,10 @@ def _scan_regex(
             rows_vuln.append(table_scan_log.row_count)
             vulns_global.append(vulns)
             rows[table_scan_log.row_count - 1] = (Align.left(text_checking), "[red]Vulnerabilities found[/red]")
+            log_scan_full.add_row(Align.left(text_checking), "[red]Vulnerabilities found[/red]")
         else:
             rows[table_scan_log.row_count - 1] = (Align.left(text_checking), "[green]OK ✔[/green]")
+            log_scan_full.add_row(Align.left(text_checking), "[green]OK ✔[/green]")
 
         table_scan_log = Table.grid(padding=1)
         table_scan_log.add_column(style="green", justify="right")
@@ -703,23 +737,7 @@ def _scan_machine_lerning(path: Path, job_progress: Progress, task: Task, overal
     overall_progress.update(overall_task, completed=completed)
 
 
-# layout["header"].update(Header())
-# layout["body"].update(make_sponsor_message())
-# layout["box2"].update(Panel(make_syntax(), border_style="green"))
-# layout["box1"].update(Panel(layout.tree, border_style="red"))
-# layout["footer"].update(progress_table)
-
-
-# with Live(layout, refresh_per_second=10, screen=True):
-#     while not overall_progress.finished:
-#         sleep(0.1)
-#         for job in job_progress.tasks:
-#             if not job.finished:
-#                 job_progress.advance(job.id)
-
-#         completed = sum(task.completed for task in job_progress.tasks)
-#         overall_progress.update(overall_task, completed=completed)
-
+layout = make_layout()
 
 if __name__ == "__main__":
     app()

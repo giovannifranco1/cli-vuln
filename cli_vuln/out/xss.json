@@ -8,7 +8,7 @@
                 "level": 1
             },
             {
-                "description": "Represents a level 1 xss failure",
+                "description": "Represents a level 2 xss failure",
                 "format": "(?:<\\s*script\\s*.*?>|<\\s*a\\s*.*?)(?:document\\s*\\.\\s*location\\s*|window\\s*\\.\\s*location\\s*|location\\s*\\.\\s*href\\s*|location\\s*\\.\\s*assign\\s*\\(|onerror\\s*=|onload\\s*=|onchange\\s*=)(.*?)(?:<\\/script>|<\\/a>)",
                 "level": 2
             }

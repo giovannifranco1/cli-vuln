@@ -85,6 +85,9 @@ def get_models():
 
 
 def mode_predictions(predictions: List[Tuple[str, str]]):
+    if len(predictions) == 0:
+        return None, None
+
     predictions = np.array(predictions)
     predictions = predictions.reshape(-1, 2)
 
