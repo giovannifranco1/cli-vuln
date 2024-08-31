@@ -5,7 +5,7 @@ Bom dia, boa tarde e boa noite! Seja bem-vindo ao Vuln, um CLI para escaneamento
 
 Ele foi desenvolvido com Python hehe, e utiliza o framework Typer para criação de comandos CLI. Ele esta em uma versão inicial, então sinta-se a vontade para contribuir com o projeto. Beijos e abraços!
 
-![Python Version](https://img.shields.io/badge/Python-^3.8.0-brightgreen) ![Poetry(https://getcomposer.org/doc/00-intro.md#installation-linux-unix-macos) ](https://img.shields.io/badge/Poetry-^1.2.0-brightgreen) ![by Giovanni](https://img.shields.io/badge/%20by-Giovannni-informational?color=ee564b)
+![Python Version](https://img.shields.io/badge/Python-^3.8.0-brightgreen) ![Poetry(https://getcomposer.org/doc/00-intro.md#installation-linux-unix-macos) ](https://img.shields.io/badge/Poetry-^1.2.0-brightgreen) ![by Giovanni](https://img.shields.io/badge/%20by-Giovanni-informational?color=ee564b)
 
 [🛠 Ferramentas](#ferramentas) | [⚙ Instalação](#instalação)
 
